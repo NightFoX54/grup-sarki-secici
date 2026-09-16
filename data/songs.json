@@ -1,0 +1,13 @@
+[
+  {
+    "id": "7afa5413-0b94-447a-9a38-6e32f5981247",
+    "artist": "metallica",
+    "title": "master of puppets",
+    "addedBy": "berkay",
+    "createdAt": "2026-09-16T13:44:29.004Z",
+    "votes": {
+      "berkay": -1
+    },
+    "disabledFor": []
+  }
+]
