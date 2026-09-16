@@ -47,10 +47,8 @@ export async function POST(
     }
 
     return NextResponse.json({ songs });
-  } catch {
-    return NextResponse.json(
-      { error: "Disable kaydedilemedi." },
-      { status: 500 },
-    );
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Disable kaydedilemedi.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -6,8 +6,20 @@ import type { Song } from "./types";
 const BLOB_PATH = "songs.json";
 const LOCAL_PATH = path.join(process.cwd(), "data", "songs.json");
 
+function env(name: string) {
+  return process.env[name];
+}
+
 function useBlob() {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  return Boolean(env("BLOB_READ_WRITE_TOKEN") || env("BLOB_STORE_ID"));
+}
+
+function assertBlobOnVercel() {
+  if (env("VERCEL") && !useBlob()) {
+    throw new Error(
+      "Blob bağlı değil. Vercel → Storage’da mevcut store’u kullan, BLOB_READ_WRITE_TOKEN olsun, sonra cache’siz Redeploy et.",
+    );
+  }
 }
 
 async function readLocal(): Promise<Song[]> {
@@ -26,11 +38,16 @@ async function writeLocal(songs: Song[]) {
 }
 
 async function readBlob(): Promise<Song[]> {
-  const result = await get(BLOB_PATH, { access: "private", useCache: false });
-  if (!result || result.statusCode !== 200 || !result.stream) return [];
-  const text = await new Response(result.stream).text();
-  const parsed = JSON.parse(text) as Song[];
-  return Array.isArray(parsed) ? parsed : [];
+  try {
+    const result = await get(BLOB_PATH, { access: "private", useCache: false });
+    if (!result || result.statusCode !== 200 || !result.stream) return [];
+    const text = await new Response(result.stream).text();
+    if (!text.trim()) return [];
+    const parsed = JSON.parse(text) as Song[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 async function writeBlob(songs: Song[]) {
@@ -43,10 +60,12 @@ async function writeBlob(songs: Song[]) {
 }
 
 export async function readSongs(): Promise<Song[]> {
+  assertBlobOnVercel();
   return useBlob() ? readBlob() : readLocal();
 }
 
 export async function writeSongs(songs: Song[]) {
+  assertBlobOnVercel();
   if (useBlob()) {
     await writeBlob(songs);
     return;

@@ -39,7 +39,8 @@ export async function POST(
     }
 
     return NextResponse.json({ songs });
-  } catch {
-    return NextResponse.json({ error: "Oy kaydedilemedi." }, { status: 500 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Oy kaydedilemedi.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

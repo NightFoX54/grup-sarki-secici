@@ -7,8 +7,9 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     return NextResponse.json({ songs: await readSongs() });
-  } catch {
-    return NextResponse.json({ error: "Liste okunamadı." }, { status: 500 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Liste okunamadı.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -46,7 +47,8 @@ export async function POST(request: Request) {
     ]);
 
     return NextResponse.json({ songs });
-  } catch {
-    return NextResponse.json({ error: "Şarkı eklenemedi." }, { status: 500 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Şarkı eklenemedi.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
