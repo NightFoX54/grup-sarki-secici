@@ -9,7 +9,10 @@ const STORAGE_KEY = "cover-user";
 type Tab = "rank" | "unvoted";
 
 function scoreOf(song: Song) {
-  return Object.values(song.votes).reduce((sum, vote) => sum + (vote ?? 0), 0);
+  return Object.values(song.votes).reduce<number>(
+    (sum, vote) => sum + (vote ?? 0),
+    0,
+  );
 }
 
 function plusCount(song: Song) {
