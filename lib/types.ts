@@ -1,6 +1,6 @@
 import type { UserId } from "./users";
 
-export type VoteValue = 1 | -1;
+export type VoteValue = 1 | 0 | -1;
 
 export type Song = {
   id: string;

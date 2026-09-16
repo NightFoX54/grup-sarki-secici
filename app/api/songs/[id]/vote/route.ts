@@ -16,7 +16,7 @@ export async function POST(
     if (!isUserId(user)) {
       return NextResponse.json({ error: "Geçersiz kullanıcı." }, { status: 400 });
     }
-    if (body.value !== 1 && body.value !== -1 && body.value !== 0) {
+    if (body.value !== 1 && body.value !== -1 && body.value !== 0 && body.value !== null) {
       return NextResponse.json({ error: "Geçersiz oy." }, { status: 400 });
     }
 
@@ -24,7 +24,7 @@ export async function POST(
       const index = current.findIndex((song) => song.id === id);
       if (index === -1) return current;
       const song = { ...current[index], votes: { ...current[index].votes } };
-      if (body.value === 0) {
+      if (body.value === null) {
         delete song.votes[user];
       } else {
         song.votes[user] = body.value as VoteValue;

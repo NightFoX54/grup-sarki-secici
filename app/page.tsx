@@ -20,6 +20,16 @@ function minusCount(song: Song) {
   return Object.values(song.votes).filter((vote) => vote === -1).length;
 }
 
+function neutralCount(song: Song) {
+  return Object.values(song.votes).filter((vote) => vote === 0).length;
+}
+
+function voteLabel(vote: VoteValue) {
+  if (vote === 1) return "+";
+  if (vote === -1) return "−";
+  return "nötr";
+}
+
 function sortSongs(songs: Song[]) {
   return [...songs].sort((a, b) => {
     const scoreDiff = scoreOf(b) - scoreOf(a);
@@ -104,7 +114,7 @@ export default function Home() {
   const vote = async (id: string, value: VoteValue) => {
     if (!user) return;
     const current = songs.find((song) => song.id === id)?.votes[user];
-    const nextValue = current === value ? 0 : value;
+    const nextValue = current === value ? null : value;
     setError("");
     try {
       const response = await fetch(`/api/songs/${id}/vote`, {
@@ -309,7 +319,7 @@ function SongCard({
             {score > 0 ? `+${score}` : score}
           </p>
           <p className="text-xs text-zinc-500">
-            +{plusCount(song)} / −{minusCount(song)}
+            +{plusCount(song)} / nötr {neutralCount(song)} / −{minusCount(song)}
           </p>
         </div>
       </div>
@@ -317,10 +327,10 @@ function SongCard({
       <div className="mt-3 flex flex-wrap gap-2 text-xs text-zinc-400">
         {USERS.map((id) => {
           const vote = song.votes[id];
-          if (!vote) return null;
+          if (vote === undefined) return null;
           return (
             <span key={id} className="rounded-full bg-white/5 px-2 py-1">
-              {USER_LABELS[id]} {vote === 1 ? "+" : "−"}
+              {USER_LABELS[id]} {voteLabel(vote)}
             </span>
           );
         })}
@@ -337,6 +347,17 @@ function SongCard({
           }`}
         >
           +
+        </button>
+        <button
+          type="button"
+          onClick={() => onVote(song.id, 0)}
+          className={`flex-1 rounded-xl border py-2 text-sm font-semibold ${
+            myVote === 0
+              ? "border-zinc-300 bg-white/15 text-white"
+              : "border-white/10 bg-white/5 text-zinc-200"
+          }`}
+        >
+          Nötr
         </button>
         <button
           type="button"
