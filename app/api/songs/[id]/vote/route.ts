@@ -12,7 +12,8 @@ export async function POST(
   try {
     const { id } = await params;
     const body = (await request.json()) as { user?: string; value?: unknown };
-    if (!isUserId(body.user)) {
+    const user = body.user;
+    if (!isUserId(user)) {
       return NextResponse.json({ error: "Geçersiz kullanıcı." }, { status: 400 });
     }
     if (body.value !== 1 && body.value !== -1 && body.value !== 0) {
@@ -24,9 +25,9 @@ export async function POST(
       if (index === -1) return current;
       const song = { ...current[index], votes: { ...current[index].votes } };
       if (body.value === 0) {
-        delete song.votes[body.user];
+        delete song.votes[user];
       } else {
-        song.votes[body.user] = body.value as VoteValue;
+        song.votes[user] = body.value as VoteValue;
       }
       const next = [...current];
       next[index] = song;

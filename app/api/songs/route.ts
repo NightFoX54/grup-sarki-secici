@@ -27,7 +27,8 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-    if (!isUserId(body.addedBy)) {
+    const addedBy = body.addedBy;
+    if (!isUserId(addedBy)) {
       return NextResponse.json({ error: "Geçersiz kullanıcı." }, { status: 400 });
     }
 
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
         id: crypto.randomUUID(),
         artist,
         title,
-        addedBy: body.addedBy,
+        addedBy,
         createdAt: new Date().toISOString(),
         votes: {},
         disabledFor: [],

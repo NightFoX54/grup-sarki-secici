@@ -15,7 +15,8 @@ export async function POST(
       reason?: string;
       remove?: boolean;
     };
-    if (!isUserId(body.user)) {
+    const user = body.user;
+    if (!isUserId(user)) {
       return NextResponse.json({ error: "Geçersiz kullanıcı." }, { status: 400 });
     }
 
@@ -30,11 +31,11 @@ export async function POST(
       const song = {
         ...current[index],
         disabledFor: current[index].disabledFor.filter(
-          (entry) => entry.user !== body.user,
+          (entry) => entry.user !== user,
         ),
       };
       if (!body.remove) {
-        song.disabledFor = [...song.disabledFor, { user: body.user, reason }];
+        song.disabledFor = [...song.disabledFor, { user, reason }];
       }
       const next = [...current];
       next[index] = song;
